@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -O2
 LDFLAGS = -lSDL2
 
-SRC = $(wildcard src/*.c)
+SRC = src/main.c
 OUT = build/pos
 
 all:
