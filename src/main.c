@@ -1,9 +1,13 @@
 #include "pos_util.c"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "app/app.c"
 #include "core/product.c"
 #include "ui/layout.c"
 #include "ui/idraw.c"
+#include "ui/button.c"
+#include "ui/font.c"
+
 
 int main(int argc, char *argv[]) {
     (void)argc; (void)argv;
@@ -27,6 +31,14 @@ int main(int argc, char *argv[]) {
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
     );
 
+    TTF_Init();
+
+    app_state.font = TTF_OpenFont("./assets/NotoSansSinhala-VariableFont.ttf", 20);
+    if (!app_state.font) {
+        printf("Font load failed\n");
+        return 1;
+    }
+
    //init section =================
    size_t perm_mem = Mbytes(5);
    unsigned char buffer_perm[perm_mem];
@@ -46,6 +58,22 @@ int main(int argc, char *argv[]) {
             if (e.type == SDL_QUIT) {
                 running = 0;
             }
+            if (e.type == SDL_MOUSEMOTION) {
+                app_state.input_state.mouse_x = e.motion.x;
+                app_state.input_state.mouse_y = e.motion.y;
+            }
+
+
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                app_state.input_state.mouse_down = 1;
+            }
+
+
+            if (e.type == SDL_MOUSEBUTTONUP) {
+                app_state.input_state.mouse_down = 0;
+            }
+
+            app_state.input_state.prev_mouse_down = app_state.input_state.mouse_down;
         }
 
         SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);

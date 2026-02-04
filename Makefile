@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2
-LDFLAGS = -lSDL2
+CFLAGS = -g -Wall -Wextra -O2
+LDFLAGS = -lSDL2 -lSDL2_ttf
 
 SRC = src/main.c
 OUT = build/pos
