@@ -4,6 +4,7 @@
 #include "../pos_util.h"
 #include "../ui/ui.h"
 #include "../core/core.h" //might have to change to datatypes.h ?
+#include "../input/input.h"
 //
 #include <SDL2/SDL_ttf.h>
 
@@ -15,13 +16,6 @@ typedef struct {
 }MemoryContext;
 
 //add this to seperate H file
-typedef struct {
-	i32 mouse_x;
-	i32 mouse_y;
-	i8 mouse_down;
-	i8 mouse_pressed;
-	i8 prev_mouse_down;
-}InputState;
 
 typedef struct {
 	Layout ui_layout;

@@ -7,6 +7,7 @@
 #include "ui/idraw.c"
 #include "ui/button.c"
 #include "ui/font.c"
+#include "input/input_func.c"
 
 
 int main(int argc, char *argv[]) {
@@ -53,34 +54,23 @@ int main(int argc, char *argv[]) {
 
     while (running) {
 	arena_release_all(&app_state.mem.frame_arena);
+
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
 	
 	while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 running = 0;
             }
-            if (e.type == SDL_MOUSEMOTION) {
-                app_state.input_state.mouse_x = e.motion.x;
-                app_state.input_state.mouse_y = e.motion.y;
-            }
 
-
-            if (e.type == SDL_MOUSEBUTTONDOWN) {
-                app_state.input_state.mouse_down = 1;
-            }
-
-
-            if (e.type == SDL_MOUSEBUTTONUP) {
-                app_state.input_state.mouse_down = 0;
-            }
-
-            app_state.input_state.prev_mouse_down = app_state.input_state.mouse_down;
+            input_handle_event(&app_state.input_state, &e, w, h);
         }
+
+        input_finalize(&app_state.input_state);
 
         SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
         SDL_RenderClear(renderer);
 
-	int w, h;
-	SDL_GetWindowSize(window, &w, &h);
 
 	immediate_mode_ui_draw(app_state, renderer, w, h);
 

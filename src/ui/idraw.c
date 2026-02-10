@@ -42,9 +42,7 @@ void draw_product_grid(SDL_Renderer *r,
             bh
         };
 
-        if (draw_button(r,font,btn,items[i],mx,my,md)) {
-            printf("Pressed %s\n", items[i]);
-        }
+        draw_button(r,font,btn,items[i],mx,my,md);
     }
 }
 
