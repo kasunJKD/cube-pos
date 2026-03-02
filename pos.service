@@ -1,0 +1,30 @@
+[Unit]
+Description=POS Terminal
+After=graphical-session.target network.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+User=pos
+WorkingDirectory=/opt/pos
+ExecStart=/opt/pos/build/pos
+Restart=always
+RestartSec=3
+
+# Give the process access to the display
+Environment=DISPLAY=:0
+Environment=SDL_VIDEODRIVER=x11
+
+# Kiosk: SDL will read pos.conf for fullscreen=1
+# Set fullscreen=1 in pos.conf to start in fullscreen desktop mode
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pos
+
+# Hardware access for printer + cash drawer
+SupplementaryGroups=lp dialout
+
+[Install]
+WantedBy=graphical-session.target

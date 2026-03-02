@@ -11,8 +11,13 @@ draw_text(
     SDL_Color color
 ) 
 {
+    /* TTF_RenderUTF8_Blended returns NULL for empty strings — guard it */
+    if (!text || text[0] == '\0') return;
+
     SDL_Surface *surf = TTF_RenderUTF8_Blended(font, text, color);
+    if (!surf) return;
     SDL_Texture *tex = SDL_CreateTextureFromSurface(r, surf);
+    if (!tex) { SDL_FreeSurface(surf); return; }
 
     SDL_Rect dst = {x, y, surf->w, surf->h};
 

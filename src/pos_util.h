@@ -96,11 +96,13 @@ typedef struct {
     size_t previous_offset;
 }Arena;
 
-void arena_init(Arena* arena, void* buf, size_t buf_lenght);
+void  arena_init(Arena* arena, void* buf, size_t buf_lenght);
 void* arena_alloc(Arena* arena, size_t size);
-void arena_release_all(Arena *arena);
-void arena_push(Arena *arena, size_t size);
-void arena_push_zero(Arena* arena, size_t size);
+void  arena_release_all(Arena *arena);
+/* arena_push: allocate without zeroing (raw bump) */
+void* arena_push(Arena *arena, size_t size);
+/* arena_push_zero: allocate and zero the memory */
+void* arena_push_zero(Arena* arena, size_t size);
 #endif
 
 #endif

@@ -1,0 +1,6 @@
+hot reloading
+proper design
+cart functionality
+payment functionality with pos/til/cashdrawer open event
+
+networking

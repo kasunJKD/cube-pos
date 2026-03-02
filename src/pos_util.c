@@ -387,4 +387,40 @@ arena_release_all
 	arena->previous_offset = 0;
 }
 
+/* arena_push: bump allocate WITHOUT zeroing — caller is responsible for init */
+void*
+arena_push
+(
+	Arena *arena,
+	size_t size
+)
+{
+	uintptr_t current_offset_position = (uintptr_t)arena->buff + (uintptr_t)arena->current_offset;
+	uintptr_t new_offset_start = align_forward(current_offset_position, DEFAULT_ALIGNMENT);
+	new_offset_start -= (uintptr_t)arena->buff;
+
+	if (new_offset_start + size <= arena->capacity)
+	{
+		void *ptr = &arena->buff[new_offset_start];
+		arena->previous_offset = new_offset_start;
+		arena->current_offset = new_offset_start + size;
+		return ptr;
+	}
+
+	return NULL;
+}
+
+/* arena_push_zero: bump allocate and zero — safe default */
+void*
+arena_push_zero
+(
+	Arena *arena,
+	size_t size
+)
+{
+	void *ptr = arena_push(arena, size);
+	if (ptr) memset(ptr, 0, size);
+	return ptr;
+}
+
 #endif

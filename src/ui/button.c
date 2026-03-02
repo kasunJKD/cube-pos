@@ -7,7 +7,7 @@ i8 draw_button(SDL_Renderer *r,
                  SDL_Rect bounds,
                  const char *text,
                  int mx, int my,
-                 i8 mouse_down)
+                 i8 mouse_pressed)
 {
     i8 hot =
         mx >= bounds.x &&
@@ -25,23 +25,70 @@ i8 draw_button(SDL_Renderer *r,
     SDL_SetRenderDrawColor(r, 200,200,200,255);
     SDL_RenderDrawRect(r, &bounds);
 
-    // draw centered text
-    SDL_Surface *surf =
-        TTF_RenderUTF8_Blended(font, text, (SDL_Color){255,255,255,255});
-    SDL_Texture *tex =
-        SDL_CreateTextureFromSurface(r, surf);
+    /* Draw centered text — guard against empty label */
+    if (text && text[0] != '\0') {
+        SDL_Surface *surf =
+            TTF_RenderUTF8_Blended(font, text, (SDL_Color){255,255,255,255});
+        if (surf) {
+            SDL_Texture *tex = SDL_CreateTextureFromSurface(r, surf);
+            if (tex) {
+                SDL_Rect txt = {
+                    bounds.x + (bounds.w - surf->w)/2,
+                    bounds.y + (bounds.h - surf->h)/2,
+                    surf->w, surf->h
+                };
+                SDL_RenderCopy(r, tex, NULL, &txt);
+                SDL_DestroyTexture(tex);
+            }
+            SDL_FreeSurface(surf);
+        }
+    }
 
-    SDL_Rect txt = {
-        bounds.x + (bounds.w - surf->w)/2,
-        bounds.y + (bounds.h - surf->h)/2,
-        surf->w,
-        surf->h
-    };
+    return hot && mouse_pressed;
+}
 
-    SDL_RenderCopy(r, tex, NULL, &txt);
+/* Coloured variant: caller supplies fill and text colours */
+i8 draw_button_ex(SDL_Renderer *r, TTF_Font *font, SDL_Rect bounds,
+                  const char *text,
+                  SDL_Color fill, SDL_Color text_col,
+                  int mx, int my, i8 mouse_pressed)
+{
+    i8 hot =
+        mx >= bounds.x &&
+        mx <= bounds.x + bounds.w &&
+        my >= bounds.y &&
+        my <= bounds.y + bounds.h;
 
-    SDL_FreeSurface(surf);
-    SDL_DestroyTexture(tex);
+    /* Lighten fill slightly when hot */
+    SDL_Color f = hot
+        ? (SDL_Color){ (u8)SDL_min(fill.r + 40, 255),
+                       (u8)SDL_min(fill.g + 40, 255),
+                       (u8)SDL_min(fill.b + 40, 255), fill.a }
+        : fill;
 
-    return hot && mouse_down;
+    SDL_SetRenderDrawColor(r, f.r, f.g, f.b, f.a);
+    SDL_RenderFillRect(r, &bounds);
+
+    SDL_SetRenderDrawColor(r, 200, 200, 200, 255);
+    SDL_RenderDrawRect(r, &bounds);
+
+    if (text && text[0] != '\0') {
+        SDL_Surface *surf =
+            TTF_RenderUTF8_Blended(font, text, text_col);
+        if (surf) {
+            SDL_Texture *tex = SDL_CreateTextureFromSurface(r, surf);
+            if (tex) {
+                SDL_Rect txt = {
+                    bounds.x + (bounds.w - surf->w) / 2,
+                    bounds.y + (bounds.h - surf->h) / 2,
+                    surf->w, surf->h
+                };
+                SDL_RenderCopy(r, tex, NULL, &txt);
+                SDL_DestroyTexture(tex);
+            }
+            SDL_FreeSurface(surf);
+        }
+    }
+
+    return hot && mouse_pressed;
 }
